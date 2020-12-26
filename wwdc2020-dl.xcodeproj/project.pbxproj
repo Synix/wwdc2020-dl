@@ -3,11 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		5025C60025905691002AAA2A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5025C5FF25905691002AAA2A /* main.swift */; };
+		5025C60925905D7C002AAA2A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5025C60825905D7C002AAA2A /* Alamofire */; };
+		50A061312596E68700DDB1DD /* downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A061302596E68700DDB1DD /* downloader.swift */; };
+		50D307DE25962245000B5B5A /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D307DD25962245000B5B5A /* parser.swift */; };
+		50D307E125962263000B5B5A /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D307E025962263000B5B5A /* extensions.swift */; };
+		50D307E525962551000B5B5A /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 50D307E425962551000B5B5A /* ArgumentParser */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +30,9 @@
 /* Begin PBXFileReference section */
 		5025C5FC25905691002AAA2A /* wwdc2020-dl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "wwdc2020-dl"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5025C5FF25905691002AAA2A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		50A061302596E68700DDB1DD /* downloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = downloader.swift; sourceTree = "<group>"; };
+		50D307DD25962245000B5B5A /* parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = parser.swift; sourceTree = "<group>"; };
+		50D307E025962263000B5B5A /* extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +40,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50D307E525962551000B5B5A /* ArgumentParser in Frameworks */,
+				5025C60925905D7C002AAA2A /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +68,9 @@
 			isa = PBXGroup;
 			children = (
 				5025C5FF25905691002AAA2A /* main.swift */,
+				50D307DD25962245000B5B5A /* parser.swift */,
+				50D307E025962263000B5B5A /* extensions.swift */,
+				50A061302596E68700DDB1DD /* downloader.swift */,
 			);
 			path = "wwdc2020-dl";
 			sourceTree = "<group>";
@@ -78,6 +91,10 @@
 			dependencies = (
 			);
 			name = "wwdc2020-dl";
+			packageProductDependencies = (
+				5025C60825905D7C002AAA2A /* Alamofire */,
+				50D307E425962551000B5B5A /* ArgumentParser */,
+			);
 			productName = "wwdc2020-dl";
 			productReference = 5025C5FC25905691002AAA2A /* wwdc2020-dl */;
 			productType = "com.apple.product-type.tool";
@@ -105,6 +122,10 @@
 				Base,
 			);
 			mainGroup = 5025C5F325905691002AAA2A;
+			packageReferences = (
+				5025C60725905D7C002AAA2A /* XCRemoteSwiftPackageReference "Alamofire" */,
+				50D307E325962551000B5B5A /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
 			productRefGroup = 5025C5FD25905691002AAA2A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -119,7 +140,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50D307DE25962245000B5B5A /* parser.swift in Sources */,
 				5025C60025905691002AAA2A /* main.swift in Sources */,
+				50A061312596E68700DDB1DD /* downloader.swift in Sources */,
+				50D307E125962263000B5B5A /* extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +245,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -235,6 +259,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -244,6 +269,8 @@
 		5025C60425905691002AAA2A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = X4YZQPAT28;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -255,10 +282,13 @@
 		5025C60525905691002AAA2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = X4YZQPAT28;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -285,6 +315,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5025C60725905D7C002AAA2A /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.1;
+			};
+		};
+		50D307E325962551000B5B5A /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5025C60825905D7C002AAA2A /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5025C60725905D7C002AAA2A /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		50D307E425962551000B5B5A /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 50D307E325962551000B5B5A /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5025C5F425905691002AAA2A /* Project object */;
 }
