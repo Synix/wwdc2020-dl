@@ -40,12 +40,12 @@ func getWebvttsUrl(in m3u8Content: String, m3u8Url: String, language: String) ->
     do {
         let regex = try NSRegularExpression(pattern: "LANGUAGE=\"(.*)\",URI=\"(.*)\"")
         let matches = regex.matches(in: m3u8Content, options: [], range: NSRange(location: 0, length: m3u8Content.count))
-        
+
         let subtitlePath = matches
             .filter { m3u8Content.substring(with: $0.range(at: 1)) == "en" }
             .map { m3u8Content.substring(with: $0.range(at: 2)) }
             .first
-        
+
         if let m3u8Url = URL(string: m3u8Url), let subtitlePath = subtitlePath {
             let webvttsUrl = m3u8Url.deletingLastPathComponent().appendingPathComponent(subtitlePath)
             return webvttsUrl
@@ -72,15 +72,15 @@ func getWebvvtUrlArray(in webvtts: String, webvttsUrl: URL) -> [String]? {
 func parseWebvvtToSrt(webvvt: String) -> [String]? {
     do {
         var results: [String] = []
-        
+
         let webvvtHeaderRegex = try NSRegularExpression(pattern: "^WEBVTT$")
         let timeStampRegex = try NSRegularExpression(pattern: "^X-TIMESTAMP-MAP=.*$")
         let cueTimeRegex = try NSRegularExpression(
             pattern: "^(\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2}\\.\\d{3}).*$")
-        
+
         let lines = webvvt.components(separatedBy: "\n")
         var subtitle: [String] = []
-        
+
         for line in lines {
             if webvvtHeaderRegex.numberOfMatches(
                 in: line, options: [], range: NSRange(location: 0, length: line.count)) > 0 {

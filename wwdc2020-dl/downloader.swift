@@ -14,11 +14,11 @@ struct WWDCDownloader {
         public static let YEAR = 2020
         public static let SESSION_PREFIX = "https://developer.apple.com/videos/play/wwdc\(YEAR)"
     }
-    
+
     let sessionId: String
 
     let queue = DispatchQueue(label: "af.networking", qos: .background, attributes: .concurrent)
-    
+
     private func requestUrl(url: String,  completion: @escaping (String) -> Void) {
         AF.request(url).responseString(queue: queue) {
             switch $0.result {
@@ -44,10 +44,13 @@ struct WWDCDownloader {
 
         AF.download(url, to: destination)
             .downloadProgress(queue: queue) {
-                print("Download Progress: \($0.fractionCompleted)")
+                let progress = $0.fractionCompleted as NSNumber
+                print("Video downloading: \(progress.percentage())")
             }
             .response(queue: queue) { response in
-                print("Download response.fileURL: \(String(describing: response.fileURL))")
+                if let path = response.fileURL?.path {
+                    print("Video downloaded at: \(path)")
+                }
             }
     }
     
@@ -59,9 +62,7 @@ struct WWDCDownloader {
         requestUrlPublisher(url: sessionUrl)
             .compactMap { getMp4Url(in: $0, quality: quality) }
             .subscribe(on: queue)
-            .sink(receiveCompletion: {
-                print("\($0)")
-            }, receiveValue: {
+            .sink(receiveCompletion: { _ in }, receiveValue: {
                 if let fileName = URL(string: $0)?.lastPathComponent {
                     downloadMp4(url: $0, with: fileName)
                 }
@@ -90,30 +91,42 @@ struct WWDCDownloader {
                     .lastPathComponent
             }
 
-        var count = 0
+        var srtCount = 0
+        var vvtCount = 0
+        var vvtProgress = 0.0
+
         webvvtsUrlPublisher
             .flatMap { requestUrlPublisher(url: $0.absoluteString) }
             .zip(webvvtsUrlPublisher)
-            .compactMap { getWebvvtUrlArray(in: $0, webvttsUrl: $1) }
+            .compactMap({ (webvttsContent, webvttsUrl) -> [String]? in
+                let webvvtUrlArray = getWebvvtUrlArray(in: webvttsContent, webvttsUrl: webvttsUrl)
+                if let cnt = webvvtUrlArray?.count {
+                    vvtCount = cnt
+                }
+                return webvvtUrlArray
+            })
             .flatMap { $0.publisher }
-            .flatMap(maxPublishers:.max(1)) { requestUrlPublisher(url: $0) }
+            .flatMap(maxPublishers: .max(1), { webvvtUrl -> AnyPublisher<String, AFError> in
+                vvtProgress += 1
+                let progress = (vvtProgress / Double(vvtCount)) as NSNumber
+                print("Subtitle downloading: \(progress.percentage())")
+                return requestUrlPublisher(url: webvvtUrl)
+            })
             .compactMap { parseWebvvtToSrt(webvvt: $0) }
             .flatMap { $0.publisher }
-            // .prefix(3)
             .reduce("") { srt, subtitle in
-                count += 1
-                return srt + "\(count)" + "\n" + subtitle + "\n\n"
+                srtCount += 1
+                return srt + "\(srtCount)" + "\n" + subtitle + "\n\n"
             }
             .zip(fileNamePublisher)
             .subscribe(on: queue)
-            .sink(receiveCompletion: {
-                print("\($0)")
-            }, receiveValue: {
+            .sink(receiveCompletion: { _ in }, receiveValue: {
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in:.userDomainMask)[0]
                 let fileURL = documentsURL.appendingPathComponent($1)
 
                 do {
                     try $0.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
+                    print("Subtitle downloaded at: \(fileURL.path)")
                 } catch {
                 }
             })
