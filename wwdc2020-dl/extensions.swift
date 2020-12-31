@@ -19,11 +19,3 @@ extension String {
     }
 }
 
-extension NSNumber {
-    func percentage() -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .percent
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: self)!
-    }
-}

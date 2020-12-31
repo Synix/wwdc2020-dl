@@ -10,6 +10,7 @@
 		5025C60025905691002AAA2A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5025C5FF25905691002AAA2A /* main.swift */; };
 		5025C60925905D7C002AAA2A /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 5025C60825905D7C002AAA2A /* Alamofire */; };
 		50A061312596E68700DDB1DD /* downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A061302596E68700DDB1DD /* downloader.swift */; };
+		50AF0CE4259D66090084BBFA /* Progress in Frameworks */ = {isa = PBXBuildFile; productRef = 50AF0CE3259D66090084BBFA /* Progress */; };
 		50D307DE25962245000B5B5A /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D307DD25962245000B5B5A /* parser.swift */; };
 		50D307E125962263000B5B5A /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D307E025962263000B5B5A /* extensions.swift */; };
 		50D307E525962551000B5B5A /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 50D307E425962551000B5B5A /* ArgumentParser */; };
@@ -40,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50AF0CE4259D66090084BBFA /* Progress in Frameworks */,
 				50D307E525962551000B5B5A /* ArgumentParser in Frameworks */,
 				5025C60925905D7C002AAA2A /* Alamofire in Frameworks */,
 			);
@@ -94,6 +96,7 @@
 			packageProductDependencies = (
 				5025C60825905D7C002AAA2A /* Alamofire */,
 				50D307E425962551000B5B5A /* ArgumentParser */,
+				50AF0CE3259D66090084BBFA /* Progress */,
 			);
 			productName = "wwdc2020-dl";
 			productReference = 5025C5FC25905691002AAA2A /* wwdc2020-dl */;
@@ -125,6 +128,7 @@
 			packageReferences = (
 				5025C60725905D7C002AAA2A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				50D307E325962551000B5B5A /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				50AF0CE2259D66090084BBFA /* XCRemoteSwiftPackageReference "Progress" */,
 			);
 			productRefGroup = 5025C5FD25905691002AAA2A /* Products */;
 			projectDirPath = "";
@@ -325,6 +329,14 @@
 				minimumVersion = 5.4.1;
 			};
 		};
+		50AF0CE2259D66090084BBFA /* XCRemoteSwiftPackageReference "Progress" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jkandzi/Progress.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
 		50D307E325962551000B5B5A /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-argument-parser";
@@ -340,6 +352,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5025C60725905D7C002AAA2A /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		50AF0CE3259D66090084BBFA /* Progress */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 50AF0CE2259D66090084BBFA /* XCRemoteSwiftPackageReference "Progress" */;
+			productName = Progress;
 		};
 		50D307E425962551000B5B5A /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;

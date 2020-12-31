@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import Alamofire
+import Progress
 
 struct WWDCDownloader {
     enum WWDC {
@@ -34,7 +35,7 @@ struct WWDCDownloader {
         return AF.request(url).publishString(queue: queue).value()
     }
 
-    private func downloadMp4(url: String, with fileName: String) {
+    private func downloadMp4(url: String, with fileName: String, completion: @escaping () -> Void) {
         let destination: DownloadRequest.Destination = { _, _ in
             let documentsURL = FileManager.default.urls(for: .documentDirectory, in:.userDomainMask)[0]
             let fileURL = documentsURL.appendingPathComponent(fileName)
@@ -42,19 +43,21 @@ struct WWDCDownloader {
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
 
+        var progressbar = ProgressBar(count: 100, configuration: [ProgressString(string: "Video downloading:"), ProgressPercent()])
+
         AF.download(url, to: destination)
             .downloadProgress(queue: queue) {
-                let progress = $0.fractionCompleted as NSNumber
-                print("Video downloading: \(progress.percentage())")
+                progressbar.setValue(Int($0.fractionCompleted * 100))
             }
             .response(queue: queue) { response in
                 if let path = response.fileURL?.path {
                     print("Video downloaded at: \(path)")
                 }
+                completion()
             }
     }
     
-    func downloadVideo(quality: String) {
+    func downloadVideo(quality: String, completion: @escaping () -> Void) {
         var cancellables = [AnyCancellable]()
 
         let sessionUrl = String(format: "%@/%@", WWDC.SESSION_PREFIX, sessionId)
@@ -62,9 +65,10 @@ struct WWDCDownloader {
         requestUrlPublisher(url: sessionUrl)
             .compactMap { getMp4Url(in: $0, quality: quality) }
             .subscribe(on: queue)
-            .sink(receiveCompletion: { _ in }, receiveValue: {
+            .sink(receiveCompletion: { _ in
+            }, receiveValue: {
                 if let fileName = URL(string: $0)?.lastPathComponent {
-                    downloadMp4(url: $0, with: fileName)
+                    downloadMp4(url: $0, with: fileName, completion: completion)
                 }
             })
             .store(in: &cancellables)
@@ -93,7 +97,8 @@ struct WWDCDownloader {
 
         var srtCount = 0
         var vvtCount = 0
-        var vvtProgress = 0.0
+        var vvtProgress = 0
+        var progressbar: ProgressBar? = nil
 
         webvvtsUrlPublisher
             .flatMap { requestUrlPublisher(url: $0.absoluteString) }
@@ -102,14 +107,15 @@ struct WWDCDownloader {
                 let webvvtUrlArray = getWebvvtUrlArray(in: webvttsContent, webvttsUrl: webvttsUrl)
                 if let cnt = webvvtUrlArray?.count {
                     vvtCount = cnt
+                    progressbar = ProgressBar(count: vvtCount,
+                                              configuration: [ProgressString(string: "Subtitle downloading:"), ProgressPercent()])
                 }
                 return webvvtUrlArray
             })
             .flatMap { $0.publisher }
             .flatMap(maxPublishers: .max(1), { webvvtUrl -> AnyPublisher<String, AFError> in
                 vvtProgress += 1
-                let progress = (vvtProgress / Double(vvtCount)) as NSNumber
-                print("Subtitle downloading: \(progress.percentage())")
+                progressbar?.setValue(vvtProgress)
                 return requestUrlPublisher(url: webvvtUrl)
             })
             .compactMap { parseWebvvtToSrt(webvvt: $0) }

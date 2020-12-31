@@ -31,13 +31,13 @@ struct WWDCDownloadCommander: ParsableCommand {
         """)
 
         let dl = WWDCDownloader(sessionId: sessionId)
-        
-        if subtitle {
-            dl.downloadSrt(language: language, quality: quality)
-        }
-        
+
         if video {
-            dl.downloadVideo(quality: quality)
+            dl.downloadVideo(quality: quality) {
+                if subtitle {
+                    dl.downloadSrt(language: language, quality: quality)
+                }
+            }
         }
     }
 }
